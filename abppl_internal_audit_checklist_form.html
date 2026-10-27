@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABPPL Internal Audit Checklist Form (ABPPL/QC/IAC/00)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QRCode.js Library for zero-backend QR generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; color: black; }
+            .card-box { border: 1px solid #ccc !important; shadow: none !important; page-break-inside: avoid; }
+            .section-header { page-break-before: always; }
+            textarea { border: none !important; resize: none; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-16">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-400 text-indigo-950 font-black px-2 py-1 rounded text-xs tracking-wider">ABPPL</div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Internal Audit Checklist</h1>
+                    <p class="text-xs text-indigo-200">Form No: ABPPL/QC/IAC/00 | ISO 9001:2015</p>
+                </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="shareViaURL()" class="bg-indigo-700 hover:bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-link">="text-amber-300"></i> Share Link
+                </button>
+                <button onclick="openQRModal()" class="bg-indigo-700 hover:bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-qrcode text-emerald-300"></i> QR Code
+                </button>
+                <button onclick="shareToWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> WhatsApp
+                </button>
+                <button onclick="exportJSON()" class="bg-indigo-800 hover:bg-indigo-700 text-indigo-100 border border-indigo-600 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
+                    <i class="fa-solid fa-download"></i> Export JSON
+                </button>
+                <label class="bg-indigo-800 hover:bg-indigo-700 text-indigo-100 border border-indigo-600 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 cursor-pointer transition">
+                    <i class="fa-solid fa-upload"></i> Import JSON
+                    <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="importJSON(event)">
+                </label>
+                <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
+                    <i class="fa-solid fa-print"></i> Print/PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 mt-6">
+
+        <!-- Form Metadata / Audit Info Header -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+            <div class="flex flex-wrap justify-between items-center border-b border-slate-200 pb-4 mb-4 gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Audit Information & Control Metadata</h2>
+                    <p class="text-xs text-slate-500">Fill out basic details prior to starting evaluation.</p>
+                </div>
+                <div class="flex items-center gap-3 no-print">
+                    <button onclick="clearForm()" class="text-xs text-rose-600 hover:text-rose-800 font-medium">Reset Form Data</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Office / Location Unit *</label>
+                    <input type="text" id="officeName" onchange="saveLocalData()" placeholder="e.g. Main Works - Site A" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Auditor Name(s) *</label>
+                    <input type="text" id="auditorName" onchange="saveLocalData()" placeholder="e.g. J. Doe / Quality Lead" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Auditee / Department *</label>
+                    <input type="text" id="auditeeName" onchange="saveLocalData()" placeholder="e.g. Operations & Store" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Audit Date *</label>
+                    <input type="date" id="auditDate" onchange="saveLocalData()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Audit Progress & Quick Filter Dashboard -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6 sticky top-14 z-30 no-print">
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-3">
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-bold text-slate-700">Audit Completion:</span>
+                    <span id="progressText" class="text-sm font-semibold text-indigo-700">0% (0/0)</span>
+                </div>
+                <!-- Status Badges Count -->
+                <div class="flex items-center gap-2 text-xs font-semibold">
+                    <span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-300" id="cntYes">YES: 0</span>
+                    <span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full border border-rose-300" id="cntNo">NO: 0</span>
+                    <span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full border border-slate-300" id="cntNA">N/A: 0</span>
+                    <span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full border border-amber-300" id="cntPending">Pending: 0</span>
+                </div>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden mb-4">
+                <div id="progressBar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="flex flex-wrap justify-between items-center gap-3 border-t border-slate-100 pt-3">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-semibold text-slate-500">Filter By Status:</span>
+                    <button onclick="setFilter('ALL')" id="filterBtnALL" class="filter-btn text-xs px-3 py-1 rounded-md bg-indigo-900 text-white font-medium">All</button>
+                    <button onclick="setFilter('YES')" id="filterBtnYES" class="filter-btn text-xs px-3 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium">YES</button>
+                    <button onclick="setFilter('NO')" id="filterBtnNO" class="filter-btn text-xs px-3 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium">NO</button>
+                    <button onclick="setFilter('NA')" id="filterBtnNA" class="filter-btn text-xs px-3 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium">N/A</button>
+                    <button onclick="setFilter('PENDING')" id="filterBtnPENDING" class="filter-btn text-xs px-3 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium">Pending</button>
+                </div>
+                <!-- Search Input -->
+                <div class="relative min-w-[220px]">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
+                    <input type="text" id="searchInput" onkeyup="renderChecklist()" placeholder="Search clause or item..." class="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist Questions Container -->
+        <div id="checklistContainer" class="space-y-6"></div>
+
+    </main>
+
+    <!-- QR Code Sharing Modal -->
+    <div id="qrModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center">
+            <h3 class="text-lg font-bold text-slate-800 mb-1">Scan to Sync Form</h3>
+            <p class="text-xs text-slate-500 mb-4">Scan this QR code using mobile phone camera or scanner to transfer current audit data instantly.</p>
+            
+            <div class="bg-white p-3 inline-block rounded-xl border border-slate-200 shadow-inner mb-4">
+                <div id="qrcodeCanvas"></div>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="closeQRModal()" class="w-full py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg text-xs font-semibold">Close</button>
+                <button onclick="shareViaURL()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold">Copy Link</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Section: Data & Core Logic -->
+    <script>
+        // Audit Questions Database (Sections A to I)
+        const auditData = [
+            {
+                sectionId: "A",
+                sectionTitle: "A. Document Control",
+                isoClause: "ISO 9001:2015 Clause 7.5",
+                items: [
+                    { id: "A1", clause: "7.5.2", question: "Are quality manual, procedures, and work instructions approved by authorized personnel prior to issue?" },
+                    { id: "A2", clause: "7.5.3", question: "Are all controlled documents available at points of use in their latest revised status?" },
+                    { id: "A3", clause: "7.5.3.2", question: "Is there a clear procedure for identification, storage, protection, retrieval, and disposal of records?" }
+                ]
+            },
+            {
+                sectionId: "B",
+                sectionTitle: "B. Resource Management",
+                isoClause: "ISO 9001:2015 Clause 7.1, 7.2, 7.3",
+                items: [
+                    { id: "B1", clause: "7.2", question: "Are training needs identified for personnel performing work affecting product/service quality?" },
+                    { id: "B2", clause: "7.2", question: "Are records of education, training, skills, and evaluation of effectiveness maintained?" },
+                    { id: "B3", clause: "7.1.4", question: "Is work environment (safety, cleanliness, ergonomics) properly maintained?" }
+                ]
+            },
+            {
+                sectionId: "C",
+                sectionTitle: "C. Marketing & Business Development",
+                isoClause: "ISO 9001:2015 Clause 8.2",
+                items: [
+                    { id: "C1", clause: "8.2.1", question: "Is customer feedback systematically collected, analyzed, and reviewed for continuous improvement?" },
+                    { id: "C2", clause: "8.2.2", question: "Are product/service requirements defined and reviewed prior to commitment to the customer?" },
+                    { id: "C3", clause: "8.2.3", question: "Are amendments to contract/order communicated to relevant internal functions?" }
+                ]
+            },
+            {
+                sectionId: "D",
+                sectionTitle: "D. Purchase & Procurement",
+                isoClause: "ISO 9001:2015 Clause 8.4",
+                items: [
+                    { id: "D1", clause: "8.4.1", question: "Are suppliers evaluated, selected, and periodically reassessed based on quality performance?" },
+                    { id: "D2", clause: "8.4.2", question: "Are purchase orders clear and detailed regarding specifications, drawing requirements, and acceptance criteria?" },
+                    { id: "D3", clause: "8.4.3", question: "Is incoming inspection performed and documented before material release for production?" }
+                ]
+            },
+            {
+                sectionId: "E",
+                sectionTitle: "E. Maintenance & Infrastructure",
+                isoClause: "ISO 9001:2015 Clause 7.1.3 & 7.1.5",
+                items: [
+                    { id: "E1", clause: "7.1.3", question: "Is preventive maintenance schedule established and followed for key machinery/tools?" },
+                    { id: "E2", clause: "7.1.5", question: "Are monitoring and measuring equipment calibrated with traceability to national/international standards?" },
+                    { id: "E3", clause: "7.1.5.2", question: "Are out-of-calibration instruments clearly tagged and removed from operational areas?" }
+                ]
+            },
+            {
+                sectionId: "F",
+                sectionTitle: "F. Job Planning & Execution",
+                isoClause: "ISO 9001:2015 Clause 8.5",
+                items: [
+                    { id: "F1", clause: "8.5.1", question: "Are job cards, drawings, and work orders available at work stations during execution?" },
+                    { id: "F2", clause: "8.5.2", question: "Is material traceability maintained from raw stage to finished output?" },
+                    { id: "F3", clause: "8.5.4", question: "Are products properly preserved, packed, and handled to prevent damage during storage?" }
+                ]
+            },
+            {
+                sectionId: "G",
+                sectionTitle: "G. Design & Development",
+                isoClause: "ISO 9001:2015 Clause 8.3",
+                items: [
+                    { id: "G1", clause: "8.3.2", question: "Are design planning stages defined with assigned responsibilities and review gates?" },
+                    { id: "G2", clause: "8.3.4", question: "Are design verification and validation conducted against initial input requirements?" },
+                    { id: "G3", clause: "8.3.6", question: "Are design changes documented, reviewed, and approved before implementation?" }
+                ]
+            },
+            {
+                sectionId: "H",
+                sectionTitle: "H. Management Representative / Leadership",
+                isoClause: "ISO 9001:2015 Clause 5 & 9.3",
+                items: [
+                    { id: "H1", clause: "5.2", question: "Is Quality Policy displayed, communicated, and understood across organizational levels?" },
+                    { id: "H2", clause: "6.2", question: "Are Quality Objectives established at relevant functions and regularly monitored?" },
+                    { id: "H3", clause: "9.3", question: "Are Management Review Meetings (MRM) conducted at planned intervals with detailed minutes?" }
+                ]
+            },
+            {
+                sectionId: "I",
+                sectionTitle: "I. Quality Control & Continuous Improvement",
+                isoClause: "ISO 9001:2015 Clause 8.7 & 10",
+                items: [
+                    { id: "I1", clause: "8.7", question: "Are non-conforming products identified, segregated, and dispositioned appropriately?" },
+                    { id: "I2", clause: "10.2", question: "Are corrective actions initiated for repeated non-conformances with root cause analysis?" },
+                    { id: "I3", clause: "9.2", question: "Is internal audit program planned, executed, and tracked for timely resolution of findings?" }
+                ]
+            }
+        ];
+
+        // State Store
+        let userResponses = {}; 
+        let currentFilter = 'ALL';
+
+        // Initialize on load
+        window.onload = function() {
+            setInitialDate();
+            loadStateFromURL() || loadLocalData();
+            renderChecklist();
+            updateStats();
+        };
+
+        function setInitialDate() {
+            const dateInput = document.getElementById('auditDate');
+            if(!dateInput.value) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+        }
+
+        // Render Form Checklist Card List
+        function renderChecklist() {
+            const container = document.getElementById('checklistContainer');
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            container.innerHTML = '';
+
+            auditData.forEach(section => {
+                // Filter items inside section
+                const filteredItems = section.items.filter(item => {
+                    const resp = userResponses[item.id] || {};
+                    const val = resp.status || 'PENDING';
+                    
+                    const matchesFilter = (currentFilter === 'ALL') || (currentFilter === val);
+                    const matchesSearch = item.question.toLowerCase().includes(searchQuery) || 
+                                          item.clause.toLowerCase().includes(searchQuery) ||
+                                          item.id.toLowerCase().includes(searchQuery);
+
+                    return matchesFilter && matchesSearch;
+                });
+
+                if (filteredItems.length === 0) return;
+
+                // Section Container Header
+                const sectionEl = document.createElement('div');
+                sectionEl.className = 'bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden section-header';
+                
+                let sectionHTML = `
+                    <div class="bg-slate-100 border-b border-slate-200 px-5 py-3 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-base">${section.sectionTitle}</h3>
+                            <span class="text-xs text-indigo-700 font-semibold">${section.isoClause}</span>
+                        </div>
+                        <span class="text-xs font-semibold bg-slate-200 text-slate-700 px-2.5 py-1 rounded-full">${filteredItems.length} items</span>
+                    </div>
+                    <div class="divide-y divide-slate-100">
+                `;
+
+                filteredItems.forEach(item => {
+                    const resp = userResponses[item.id] || { status: '', observation: '' };
+                    const status = resp.status || '';
+                    const obs = resp.observation || '';
+
+                    sectionHTML += `
+                        <div class="p-4 sm:p-5 card-box hover:bg-slate-50/50 transition" data-clause="${item.clause}" id="card-${item.id}">
+                            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">${item.id}</span>
+                                        <span class="text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">Clause ${item.clause}</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-slate-800 leading-snug">${item.question}</p>
+                                </div>
+
+                                <!-- Radio Decision Buttons -->
+                                <div class="flex items-center gap-2 no-print shrink-0">
+                                    <label class="cursor-pointer flex items-center justify-center px-3 py-1.5 rounded-lg border text-xs font-bold transition ${status==='YES' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'}">
+                                        <input type="radio" name="status-${item.id}" value="YES" ${status==='YES' ? 'checked' : ''} onchange="updateAnswer('${item.id}', 'YES')" class="hidden"> YES
+                                    </label>
+                                    <label class="cursor-pointer flex items-center justify-center px-3 py-1.5 rounded-lg border text-xs font-bold transition ${status==='NO' ? 'bg-rose-600 text-white border-rose-600' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'}">
+                                        <input type="radio" name="status-${item.id}" value="NO" ${status==='NO' ? 'checked' : ''} onchange="updateAnswer('${item.id}', 'NO')" class="hidden"> NO
+                                    </label>
+                                    <label class="cursor-pointer flex items-center justify-center px-3 py-1.5 rounded-lg border text-xs font-bold transition ${status==='NA' ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'}">
+                                        <input type="radio" name="status-${item.id}" value="NA" ${status==='NA' ? 'checked' : ''} onchange="updateAnswer('${item.id}', 'NA')" class="hidden"> N/A
+                                    </label>
+                                </div>
+
+                                <!-- Print View Answer Badge -->
+                                <div class="hidden print-only font-bold text-xs">
+                                    Status: ${status || 'Pending'}
+                                </div>
+                            </div>
+
+                            <!-- Observation & Objective Evidence Textarea -->
+                            <div class="mt-3">
+                                <textarea id="obs-${item.id}" onchange="updateObservation('${item.id}', this.value)" rows="2" placeholder="Auditor observations, evidence reviewed, or non-conformance details..." class="w-full text-xs p-2.5 border border-slate-200 rounded-lg outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50/50">${obs}</textarea>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                sectionHTML += `</div>`;
+                sectionEl.innerHTML = sectionHTML;
+                container.appendChild(sectionEl);
+            });
+
+            if (container.children.length === 0) {
+                container.innerHTML = `<div class="bg-white p-8 text-center text-slate-500 rounded-xl border border-slate-200">No matching audit items found.</div>`;
+            }
+        }
+
+        // Handle Status Radio Change
+        function updateAnswer(itemId, value) {
+            if(!userResponses[itemId]) userResponses[itemId] = { status: '', observation: '' };
+            userResponses[itemId].status = value;
+            saveLocalData();
+            updateStats();
+            renderChecklist();
+        }
+
+        // Handle Observation Text Change
+        function updateObservation(itemId, text) {
+            if(!userResponses[itemId]) userResponses[itemId] = { status: '', observation: '' };
+            userResponses[itemId].observation = text;
+            saveLocalData();
+        }
+
+        // Update Dashboard Stats and Progress Bar
+        function updateStats() {
+            let total = 0;
+            let yesCount = 0;
+            let noCount = 0;
+            let naCount = 0;
+            let answered = 0;
+
+            auditData.forEach(s => {
+                s.items.forEach(i => {
+                    total++;
+                    const st = userResponses[i.id]?.status;
+                    if(st === 'YES') { yesCount++; answered++; }
+                    else if(st === 'NO') { noCount++; answered++; }
+                    else if(st === 'NA') { naCount++; answered++; }
+                });
+            });
+
+            const pendingCount = total - answered;
+            const pct = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+            document.getElementById('cntYes').innerText = `YES: ${yesCount}`;
+            document.getElementById('cntNo').innerText = `NO: ${noCount}`;
+            document.getElementById('cntNA').innerText = `N/A: ${naCount}`;
+            document.getElementById('cntPending').innerText = `Pending: ${pendingCount}`;
+            document.getElementById('progressText').innerText = `${pct}% (${answered}/${total})`;
+            document.getElementById('progressBar').style.width = `${pct}%`;
+        }
+
+        // Filter Controls
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn text-xs px-3 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium";
+            });
+            document.getElementById(`filterBtn${filter}`).className = "filter-btn text-xs px-3 py-1 rounded-md bg-indigo-900 text-white font-medium";
+            renderChecklist();
+        }
+
+        // Local Storage Persistence
+        function getPayload() {
+            return {
+                meta: {
+                    office: document.getElementById('officeName').value,
+                    auditor: document.getElementById('auditorName').value,
+                    auditee: document.getElementById('auditeeName').value,
+                    date: document.getElementById('auditDate').value
+                },
+                responses: userResponses
+            };
+        }
+
+        function saveLocalData() {
+            const payload = getPayload();
+            localStorage.setItem('abppl_audit_state', JSON.stringify(payload));
+        }
+
+        function loadLocalData() {
+            const raw = localStorage.getItem('abppl_audit_state');
+            if(!raw) return false;
+            try {
+                const parsed = JSON.parse(raw);
+                applyPayload(parsed);
+                return true;
+            } catch(e) {
+                console.error("Failed to load cached local state", e);
+                return false;
+            }
+        }
+
+        function applyPayload(payload) {
+            if(payload.meta) {
+                document.getElementById('officeName').value = payload.meta.office || '';
+                document.getElementById('auditorName').value = payload.meta.auditor || '';
+                document.getElementById('auditeeName').value = payload.meta.auditee || '';
+                document.getElementById('auditDate').value = payload.meta.date || '';
+            }
+            if(payload.responses) {
+                userResponses = payload.responses;
+            }
+        }
+
+        function clearForm() {
+            if(confirm("Are you sure you want to reset all audit form answers and observations?")) {
+                localStorage.removeItem('abppl_audit_state');
+                userResponses = {};
+                document.getElementById('officeName').value = '';
+                document.getElementById('auditorName').value = '';
+                document.getElementById('auditeeName').value = '';
+                setInitialDate();
+                renderChecklist();
+                updateStats();
+            }
+        }
+
+        // Multi-Device Method 1: URL Parameter Dynamic Sync
+        function shareViaURL() {
+            saveLocalData();
+            const payload = getPayload();
+            const encoded = encodeURIComponent(JSON.stringify(payload));
+            const shareableURL = `${window.location.origin}${window.location.pathname}#data=${encoded}`;
+
+            copyToClipboard(shareableURL);
+            alert("Live Audit Form Link copied to clipboard!\n\nYou can now send this link via WhatsApp, Email, or SMS to open the pre-filled form on any other device.");
+        }
+
+        function loadStateFromURL() {
+            const hash = window.location.hash;
+            if(hash && hash.includes('#data=')) {
+                try {
+                    const rawData = decodeURIComponent(hash.split('#data=')[1]);
+                    const payload = JSON.parse(rawData);
+                    applyPayload(payload);
+                    saveLocalData();
+                    return true;
+                } catch(e) {
+                    console.error("URL state parsing error:", e);
+                }
+            }
+            return false;
+        }
+
+        // Multi-Device Method 2: QR Code Generator Modal
+        function openQRModal() {
+            saveLocalData();
+            const payload = getPayload();
+            const encoded = encodeURIComponent(JSON.stringify(payload));
+            const shareableURL = `${window.location.origin}${window.location.pathname}#data=${encoded}`;
+
+            const qrContainer = document.getElementById("qrcodeCanvas");
+            qrContainer.innerHTML = "";
+            
+            new QRCode(qrContainer, {
+                text: shareableURL,
+                width: 200,
+                height: 200,
+                colorDark : "#1e1b4b",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.L
+            });
+
+            document.getElementById('qrModal').classList.remove('hidden');
+        }
+
+        function closeQRModal() {
+            document.getElementById('qrModal').classList.add('hidden');
+        }
+
+        // Multi-Device Method 3: JSON Import / Export
+        function exportJSON() {
+            saveLocalData();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(getPayload(), null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `ABPPL_Audit_${document.getElementById('auditDate').value || 'report'}.json`);
+            dlAnchorElem.click();
+        }
+
+        function importJSON(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    applyPayload(parsed);
+                    saveLocalData();
+                    renderChecklist();
+                    updateStats();
+                    alert("Audit state imported successfully!");
+                } catch(err) {
+                    alert("Invalid JSON data file format.");
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+        }
+
+        // Multi-Device Method 4: Formatted WhatsApp Share Exporter
+        function shareToWhatsApp() {
+            saveLocalData();
+            const office = document.getElementById('officeName').value || 'N/A';
+            const auditor = document.getElementById('auditorName').value || 'N/A';
+            const date = document.getElementById('auditDate').value || 'N/A';
+
+            let text = `*ABPPL INTERNAL AUDIT REPORT*\n`;
+            text += `*Form No:* ABPPL/QC/IAC/00\n`;
+            text += `*Office/Site:* ${office}\n`;
+            text += `*Auditor:* ${auditor}\n`;
+            text += `*Date:* ${date}\n\n`;
+
+            let yes = 0, no = 0, na = 0, pending = 0;
+            const noDetails = [];
+
+            auditData.forEach(s => {
+                s.items.forEach(i => {
+                    const st = userResponses[i.id]?.status;
+                    const obs = userResponses[i.id]?.observation || 'No remarks recorded';
+                    if(st === 'YES') yes++;
+                    else if(st === 'NO') { 
+                        no++; 
+                        noDetails.push(`• *[${i.id} - Clause ${i.clause}]*: ${i.question}\n  _Obs:_ ${obs}`);
+                    }
+                    else if(st === 'NA') na++;
+                    else pending++;
+                });
+            });
+
+            text += `*SUMMARY SCOREBAR:*\n`;
+            text += `✅ YES: ${yes} | ❌ NO: ${no} | ⚪ N/A: ${na} | ⏳ Pending: ${pending}\n\n`;
+
+            if(noDetails.length > 0) {
+                text += `*NON-CONFORMANCES (NO):*\n` + noDetails.join('\n\n') + `\n\n`;
+            } else {
+                text += `*NON-CONFORMANCES:* Zero non-conformances flagged.\n\n`;
+            }
+
+            text += `Submitted via ABPPL Digital Form App.`;
+
+            const encoded = encodeURIComponent(text);
+            const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+            const waUrl = isMobile 
+                ? `whatsapp://send?text=${encoded}` 
+                : `https://web.whatsapp.com/send?text=${encoded}`;
+
+            window.open(waUrl, '_blank');
+        }
+
+        // Clipboard Helper
+        function copyToClipboard(text) {
+            const dummy = document.createElement("input");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+        }
+    </script>
+</body>
+</html>
